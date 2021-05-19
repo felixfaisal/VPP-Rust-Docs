@@ -15,14 +15,49 @@ I went through `.api` files but I feel `.api.json` files are much better as it i
 ## What is VPP Binary API Union 
 This is a complicated answer especially for me as essentially I couldn't find a detailed description of what it simply meant. If  there was a single line sentence that could help me describe it then i could easily do that but even after reading tons of code I haven't been able to even cook up sentences that could describe what it essentially the concept means, So over here I will describe my process of discovering **VPP Binary API Union** 
 
-Firstly, Going through `api.json` in Rust api generator code [rust-vpp-gen](), I found Unions to be like this 
+Firstly, Going through `api.json` in Rust api generator code [rust-vpp-gen](https://github.com/ayourtch/vpp-api-gen/), I found Unions to be like this 
 ```javascript
+    "unions": [
+        [
+            "address_union",
+            [
+                "vl_api_ip4_address_t",
+                "ip4"
+            ],
+            [
+                "vl_api_ip6_address_t",
+                "ip6"
+            ]
+        ]
+    ],
 ``` 
 So then I went through rust code responsible for parsing and generating code where i found an interesting struct that described `api.json` files in a really good way as to what all exists in it. Wherein I also found `Unions:Vec<`, naturally I wanted to have a look at what the underlying structure is so i looked over it 
 ```rust
+#[derive(Debug, Serialize, Deserialize)]
+struct VppJsApiFile {
+    types: Vec<VppJsApiType>,
+    messages: Vec<VppJsApiMessage>,
+    unions: Vec<VppJsApiType>,
+    enums: Vec<VppJsApiEnum>,
+    #[serde(default)]
+    enumflags: Vec<VppJsApiEnum>,
+    services: LinkedHashMap<String, VppJsApiService>,
+    options: VppJsApiOptions,
+    aliases: LinkedHashMap<String, VppJsApiAlias>,
+    vl_api_version: String,
+    imports: Vec<String>,
+    counters: Vec<VppJsApiCounter>,
+    paths: Vec<Vec<VppJsApiPath>>,
+}
+#[derive(Debug, Clone)]
+struct VppJsApiType {
+    type_name: String,
+    fields: Vec<VppJsApiMessageFieldDef>,
+}
 ``` 
 The Rust code definetely makes sense but there is no definitive way in which i can explain still what union means. So I went ahead and explored API generator for python which had defined a class for handling Union looks like this, 
 ```python 
+
 ``` 
 Howerver this too didn't make much of sense for me, As I explored I found Go api generator for an older version VPP(19), where they have tackled Union and also produced an example on how to make use of it 
 
