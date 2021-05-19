@@ -110,16 +110,59 @@ class VPPUnionType(Packer):
     def __repr__(self):
         return"VPPUnionType(name=%s, msgdef=%r)" % (self.name, self.msgdef)
 ``` 
-Howerver this too didn't make much of sense for me, As I explored I found Go api generator for an older version VPP(19), where they have tackled Union and also produced an example on how to make use of it 
+Howerver this too didn't make much of sense for me, As I explored I found Go api generator for an older version VPP(19), where they have tackled Union and also produced an example on how to make use of it. This is from GoVPP version `0.1.0`
 
 ```Golang
+// AddressUnion represents VPP binary API union 'address_union'.
+type AddressUnion struct {
+	XXX_UnionData [16]byte
+}
 
+func (*AddressUnion) GetTypeName() string {
+	return "address_union"
+}
+func (*AddressUnion) GetCrcString() string {
+	return "d68a2fb4"
+}
+
+func AddressUnionIP4(a IP4Address) (u AddressUnion) {
+	u.SetIP4(a)
+	return
+}
+func (u *AddressUnion) SetIP4(a IP4Address) {
+	var b = new(bytes.Buffer)
+	if err := struc.Pack(b, &a); err != nil {
+		return
+	}
+	copy(u.XXX_UnionData[:], b.Bytes())
+}
+func (u *AddressUnion) GetIP4() (a IP4Address) {
+	var b = bytes.NewReader(u.XXX_UnionData[:])
+	struc.Unpack(b, &a)
+	return
+}
+
+func AddressUnionIP6(a IP6Address) (u AddressUnion) {
+	u.SetIP6(a)
+	return
+}
+func (u *AddressUnion) SetIP6(a IP6Address) {
+	var b = new(bytes.Buffer)
+	if err := struc.Pack(b, &a); err != nil {
+		return
+	}
+	copy(u.XXX_UnionData[:], b.Bytes())
+}
+func (u *AddressUnion) GetIP6() (a IP6Address) {
+	var b = bytes.NewReader(u.XXX_UnionData[:])
+	struc.Unpack(b, &a)
+	return
+}
 ```
-Example: 
+Example: [union_example.go](https://github.com/FDio/govpp/blob/v0.1.0/examples/union-example/union_example.go)
 
 ## My Strategy 
 
-- I believe we could do something similar to what Go is currently doing because even though it's a garbage collected it's definitely better than Python in terms of the way code is written 
+- I believe we could do something similar to what Go is currently doing because even though it's a garbage collected it's definitely better than Python in terms of the way code is written. This however does involving reading through a lot of Go code but then again fits the project philosophy about not needing to reinvent the while unless it's a square shaped one and from my point of view it doesn't seem like a square shaped one as of now. 
 - There is a need for proper nomenclature to be used and I think GoVPP has done a good job in that regards, We could use or not use the same nomenclature but using it allows new developers to interpret the underlying code better. 
-- Since the architecture of vpp-api-gen is still not quite set in stone, I'd like to have a discussion over the use of Rust for generating as parsing through the api.json files has been done by Go and Python, and since what ultimately is required is the output which is the rust files. We don't have to worry about performance as it is a one time process but I'd definitely would like to have a discussion to better understand it. 
 - **Mono Repo**, Mono repo would be great to manage all parts of the Rust VPP instead of having different repository for each part. 
