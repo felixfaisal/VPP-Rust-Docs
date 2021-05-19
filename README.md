@@ -57,11 +57,63 @@ struct VppJsApiType {
 ``` 
 The Rust code definetely makes sense but there is no definitive way in which i can explain still what union means. So I went ahead and explored API generator for python which had defined a class for handling Union looks like this, 
 ```python 
+class VPPUnionType(Packer):
+    def __init__(self, name, msgdef):
+        self.name = name
+        self.msgdef = msgdef
+        self.size = 0
+        self.maxindex = 0
+        fields = []
+        self.packers = collections.OrderedDict()
+        for i, f in enumerate(msgdef):
+            if type(f) is dict and 'crc' in f:
+                self.crc = f['crc']
+                continue
+            f_type, f_name = f
+            if f_type not in types:
+                logger.debug('Unknown union type {}'.format(f_type))
+                raise VPPSerializerValueError(
+                    'Unknown message type {}'.format(f_type))
+            fields.append(f_name)
+            size = types[f_type].size
+            self.packers[f_name] = types[f_type]
+            if size > self.size:
+                self.size = size
+                self.maxindex = i
 
+        types[name] = self
+        self.tuple = collections.namedtuple(name, fields, rename=True)
+
+    # Union of variable length?
+    def pack(self, data, kwargs=None):
+        if not data:
+            return b'\x00' * self.size
+
+        for k, v in data.items():
+            logger.debug("Key: {} Value: {}".format(k, v))
+            b = self.packers[k].pack(v, kwargs)
+            break
+        r = bytearray(self.size)
+        r[:len(b)] = b
+        return r
+
+    def unpack(self, data, offset=0, result=None, ntc=False):
+        r = []
+        maxsize = 0
+        for k, p in self.packers.items():
+            x, size = p.unpack(data, offset, ntc=ntc)
+            if size > maxsize:
+                maxsize = size
+            r.append(x)
+        return self.tuple._make(r), maxsize
+
+    def __repr__(self):
+        return"VPPUnionType(name=%s, msgdef=%r)" % (self.name, self.msgdef)
 ``` 
 Howerver this too didn't make much of sense for me, As I explored I found Go api generator for an older version VPP(19), where they have tackled Union and also produced an example on how to make use of it 
 
 ```Golang
+
 ```
 Example: 
 
