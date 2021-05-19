@@ -4,7 +4,7 @@
 The VPP platform is an extensible framework that provides out-of-the-box production quality switch/router functionality. It is the `open source version of Cisco's Vector Packet Processing (VPP) technology`: a high performance, packet-processing stack that can run on commodity CPUs.
 
 To understand the project better I went through youtube videos of VPP which are <br> 
-[VPP Overview]() || [VPP Architecture]() 
+[VPP Overview](https://www.youtube.com/watch?v=9Bk9pj71qWY) || [VPP Architecture](https://www.youtube.com/watch?v=d6Fn5cuLcVk) 
 
 ## What is Binary API 
 VPP provides a binary API scheme to allow a wide variety of client codes to program data-plane tables. As of this writing, there are hundreds of binary APIs.
