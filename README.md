@@ -21,4 +21,11 @@ Firstly, Going through `api.json` in Rust api generator code [rust-vpp-gen](), I
 So then I went through rust code responsible for parsing and generating code where i found an interesting struct that described `api.json` files in a really good way as to what all exists in it. Wherein I also found `Unions:Vec<`, naturally I wanted to have a look at what the underlying structure is so i looked over it 
 ```rust
 ``` 
-The Rust code definetely makes sense but there is no definitive way in which i can explain still what union means. 
+The Rust code definetely makes sense but there is no definitive way in which i can explain still what union means. So I went ahead and explored API generator for python which had defined a class for handling Union looks like this, 
+```python 
+``` 
+Howerver this too didn't make much of sense for me, As I explored I found Go api generator for an older version VPP(19), where they have tackled Union and also produced an example on how to make use of it 
+
+```Golang
+```
+Example: 
