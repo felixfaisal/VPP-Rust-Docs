@@ -29,3 +29,10 @@ Howerver this too didn't make much of sense for me, As I explored I found Go api
 ```Golang
 ```
 Example: 
+
+## My Strategy 
+
+- I believe we could do something similar to what Go is currently doing because even though it's a garbage collected it's definitely better than Python in terms of the way code is written 
+- There is a need for proper nomenclature to be used and I think GoVPP has done a good job in that regards, We could use or not use the same nomenclature but using it allows new developers to interpret the underlying code better. 
+- Since the architecture of vpp-api-gen is still not quite set in stone, I'd like to have a discussion over the use of Rust for generating as parsing through the api.json files has been done by Go and Python, and since what ultimately is required is the output which is the rust files. We don't have to worry about performance as it is a one time process but I'd definitely would like to have a discussion to better understand it. 
+- **Mono Repo**, Mono repo would be great to manage all parts of the Rust VPP instead of having different repository for each part. 
