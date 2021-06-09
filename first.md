@@ -121,5 +121,7 @@ A Visitor is instantiated by a Deserialize impl and passed to a Deserializer. Th
 This is created to deseralize data into VppJsApiType form which is a struct 
 You can read more about custom serde deserializer [here](https://serde.rs/impl-deserialize.html)
 
+[Next 100 lines of code](/second.md)
+
 
 
